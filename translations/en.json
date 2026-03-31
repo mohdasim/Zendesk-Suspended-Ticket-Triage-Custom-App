@@ -1,0 +1,8 @@
+{
+  "app": {
+    "name": "Suspended Tickets Triage Center",
+    "short_description": "Triage, recover, and delete suspended tickets with analytics and caching.",
+    "long_description": "A powerful triage center for Zendesk suspended tickets. Features include bulk recovery and deletion, trend charts, IndexedDB caching for fast loading, search and filtering, virtual scrolling for large datasets, and a 30-day action audit log.",
+    "installation_instructions": "Install the app from the Zendesk Marketplace or upload the ZIP package via Zendesk Admin. No additional configuration is required — the app uses your existing Zendesk authentication."
+  }
+}

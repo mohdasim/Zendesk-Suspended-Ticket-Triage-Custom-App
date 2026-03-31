@@ -1,0 +1,19 @@
+{
+  "name": "zendesk-suspended-tickets-triage",
+  "version": "1.0.0",
+  "description": "Zendesk sidebar app for triaging suspended tickets — bulk recover/delete, trend charts, IndexedDB caching, search, and action audit logs. Built with ZAF SDK and Zendesk Garden CSS.",
+  "author": "Mohd Asim Suhail <mohd.asim.mnnit@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohdasim/zendesk-suspended-ticket-triage-custom-app"
+  },
+  "keywords": [
+    "zendesk",
+    "suspended-tickets",
+    "triage",
+    "zendesk-app",
+    "zaf",
+    "garden-css"
+  ]
+}
