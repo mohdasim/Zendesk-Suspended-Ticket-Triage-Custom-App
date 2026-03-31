@@ -1,0 +1,22 @@
+{
+  "name": "Suspended Tickets Triage Center",
+  "author": {
+    "name": "Mohd Asim Suhail",
+    "email": "mohd.asim.mnnit@gmail.com",
+    "url": "https://github.com/mohdasim"
+  },
+  "defaultLocale": "en",
+  "private": true,
+  "location": {
+    "support": {
+      "nav_bar": {
+        "url": "assets/iframe.html",
+        "flexible": true
+      }
+    }
+  },
+  "version": "1.0.0",
+  "frameworkVersion": "2.0",
+  "singleInstall": true,
+  "signedUrls": false
+}
