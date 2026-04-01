@@ -58,11 +58,24 @@
     <div class="app-tabs u-mt-xs">
       <button class="app-tabs__tab app-tabs__tab--active" data-tab="dashboard">Dashboard</button>
       <button class="app-tabs__tab" data-tab="tickets">Tickets</button>
+      <button class="app-tabs__tab" data-tab="rules">Rules</button>
       <button class="app-tabs__tab" data-tab="log">Activity Log</button>
     </div>
 
     <!-- Dashboard Tab -->
     <div class="app-tab-content" id="tab-dashboard">
+      <!-- Date Range (Dashboard) -->
+      <div class="app-date-range u-mt-sm">
+        <div class="c-txt">
+          <input class="c-txt__input c-txt__input--sm" type="date" id="dashDateFrom" title="From date">
+        </div>
+        <span class="app-date-range__separator">to</span>
+        <div class="c-txt">
+          <input class="c-txt__input c-txt__input--sm" type="date" id="dashDateTo" title="To date">
+        </div>
+        <button class="c-btn c-btn--basic c-btn--sm" id="dashDateClear" title="Clear dates">Clear</button>
+      </div>
+
       <!-- Summary Cards -->
       <div class="app-summary u-mt-sm" id="summaryCards">
         <div class="app-summary__card">
@@ -80,6 +93,26 @@
         <div class="app-summary__card app-summary__card--other">
           <div class="app-summary__value" id="otherCount">0</div>
           <div class="app-summary__label">Other</div>
+        </div>
+      </div>
+
+      <!-- Urgency Summary -->
+      <div class="app-urgency-summary u-mt-sm" id="urgencySummary" style="display:none;">
+        <div class="app-urgency-summary__card app-urgency-summary__card--critical">
+          <div class="app-urgency-summary__value" id="urgencyCritical">0</div>
+          <div class="app-urgency-summary__label">Critical</div>
+        </div>
+        <div class="app-urgency-summary__card app-urgency-summary__card--urgent">
+          <div class="app-urgency-summary__value" id="urgencyUrgent">0</div>
+          <div class="app-urgency-summary__label">Urgent</div>
+        </div>
+        <div class="app-urgency-summary__card app-urgency-summary__card--warning">
+          <div class="app-urgency-summary__value" id="urgencyWarning">0</div>
+          <div class="app-urgency-summary__label">Warning</div>
+        </div>
+        <div class="app-urgency-summary__card app-urgency-summary__card--safe">
+          <div class="app-urgency-summary__value" id="urgencySafe">0</div>
+          <div class="app-urgency-summary__label">Safe</div>
         </div>
       </div>
 
@@ -104,10 +137,46 @@
           <canvas id="causeChart"></canvas>
         </div>
       </div>
+
+      <!-- Top Domains -->
+      <div class="app-section u-mt-sm" id="topDomainsSection" style="display:none;">
+        <h3 class="app-section__title">Top Domains</h3>
+        <div class="app-top-domains" id="topDomainsList"></div>
+      </div>
+
+      <!-- Domain Distribution Chart -->
+      <div class="app-section u-mt-sm" id="domainChartSection" style="display:none;">
+        <h3 class="app-section__title">Domain Distribution</h3>
+        <div class="app-chart-container">
+          <canvas id="domainChart"></canvas>
+        </div>
+      </div>
     </div>
 
     <!-- Tickets Tab -->
     <div class="app-tab-content" id="tab-tickets" style="display:none;">
+      <!-- Filter Presets -->
+      <div class="app-presets u-mt-sm" id="presetContainer"></div>
+      <div class="app-preset-save u-mt-xs" id="presetSaveRow" style="display:none;">
+        <div class="c-txt" style="flex:1;">
+          <input class="c-txt__input c-txt__input--sm" id="presetNameInput" type="text" placeholder="Preset name...">
+        </div>
+        <button class="c-btn c-btn--primary c-btn--sm" id="savePresetBtn">Save</button>
+        <button class="c-btn c-btn--basic c-btn--sm" id="cancelPresetBtn">Cancel</button>
+      </div>
+
+      <!-- Date Range (Tickets) -->
+      <div class="app-date-range u-mt-sm">
+        <div class="c-txt">
+          <input class="c-txt__input c-txt__input--sm" type="date" id="dateFrom" title="From date">
+        </div>
+        <span class="app-date-range__separator">to</span>
+        <div class="c-txt">
+          <input class="c-txt__input c-txt__input--sm" type="date" id="dateTo" title="To date">
+        </div>
+        <button class="c-btn c-btn--basic c-btn--sm" id="dateClear" title="Clear dates">Clear</button>
+      </div>
+
       <!-- Filter Bar -->
       <div class="app-filters u-mt-sm">
         <div class="c-txt">
@@ -120,6 +189,17 @@
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
             <option value="subject">Subject A-Z</option>
+            <option value="urgency">Most Urgent</option>
+            <option value="domain">Group by Domain</option>
+          </select>
+        </div>
+        <div class="c-txt">
+          <select class="c-txt__input c-txt__input--select c-txt__input--sm" id="urgencyFilter">
+            <option value="">All Urgency</option>
+            <option value="critical">Critical (&lt;1 day)</option>
+            <option value="urgent">Urgent (1-3 days)</option>
+            <option value="warning">Warning (3-7 days)</option>
+            <option value="safe">Safe (&gt;7 days)</option>
           </select>
         </div>
       </div>
@@ -134,6 +214,7 @@
         <div class="app-bulk-actions__buttons">
           <button class="c-btn c-btn--primary c-btn--sm" id="recoverBtn" disabled>Recover</button>
           <button class="c-btn c-btn--danger c-btn--sm" id="deleteBtn" disabled>Delete</button>
+          <button class="c-btn c-btn--sm" id="applyRecommendationsBtn" style="display:none;" title="Apply auto-triage recommendations">Apply Rules</button>
           <button class="c-btn c-btn--basic c-btn--sm" id="exportCsvBtn" title="Export to CSV">
             <svg viewBox="0 0 16 16" width="12" height="12"><path fill="currentColor" d="M8 10l-4-4h3V1h2v5h3L8 10zm6 2v2H2v-2H0v4h16v-4h-2z"/></svg>
             CSV
@@ -155,6 +236,52 @@
           <path fill="#d8dcde" d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm0 36c-8.84 0-16-7.16-16-16S15.16 8 24 8s16 7.16 16 16-7.16 16-16 16zm-2-22h4v12h-4V18zm0 16h4v4h-4v-4z"/>
         </svg>
         <p id="emptyText">No suspended tickets found.</p>
+      </div>
+    </div>
+
+    <!-- Rules Tab -->
+    <div class="app-tab-content" id="tab-rules" style="display:none;">
+      <div class="app-rules-header u-mt-sm">
+        <h3 class="app-section__title">Auto-Triage Rules</h3>
+        <button class="c-btn c-btn--primary c-btn--sm" id="newRuleBtn">New Rule</button>
+      </div>
+      <div class="app-rules-list" id="rulesList">
+        <div class="app-empty"><p>No rules configured yet.</p></div>
+      </div>
+
+      <!-- Rule Editor -->
+      <div class="app-rule-editor" id="ruleEditor" style="display:none;">
+        <div class="app-rule-editor__header">
+          <h3 id="ruleEditorTitle">New Rule</h3>
+        </div>
+        <div class="app-rule-editor__body">
+          <div class="c-txt u-mt-xs">
+            <label class="c-txt__label">Rule Name</label>
+            <input class="c-txt__input c-txt__input--sm" id="ruleNameInput" type="text" placeholder="e.g., Auto-delete spam from bots">
+          </div>
+          <div class="u-mt-xs">
+            <label class="c-txt__label">Conditions (all must match)</label>
+            <div id="ruleConditions"></div>
+            <button class="c-btn c-btn--basic c-btn--sm u-mt-xs" id="addConditionBtn">+ Add Condition</button>
+          </div>
+          <div class="app-rule-action u-mt-xs">
+            <label class="c-txt__label">Recommended Action</label>
+            <div class="app-rule-action__radios">
+              <label class="c-chk">
+                <input class="c-chk__input" type="radio" name="ruleAction" value="recover">
+                <span class="c-chk__label">Recover</span>
+              </label>
+              <label class="c-chk">
+                <input class="c-chk__input" type="radio" name="ruleAction" value="delete" checked>
+                <span class="c-chk__label">Delete</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="app-rule-editor__footer u-mt-xs">
+          <button class="c-btn c-btn--basic c-btn--sm" id="cancelRuleBtn">Cancel</button>
+          <button class="c-btn c-btn--primary c-btn--sm" id="saveRuleBtn">Save Rule</button>
+        </div>
       </div>
     </div>
 
@@ -180,6 +307,12 @@
         </div>
         <div class="app-modal__body">
           <p id="modalMessage">Are you sure?</p>
+          <div id="modalDeleteInput" style="display:none;" class="u-mt-xs">
+            <p class="app-modal__warning">Type DELETE to confirm:</p>
+            <div class="c-txt">
+              <input class="c-txt__input c-txt__input--sm" id="modalDeleteConfirm" type="text" placeholder="Type DELETE" autocomplete="off">
+            </div>
+          </div>
         </div>
         <div class="app-modal__footer">
           <button class="c-btn c-btn--basic c-btn--sm" id="modalCancel">Cancel</button>
@@ -218,6 +351,7 @@
   <script src="js/search.js"></script>
   <script src="js/virtual-list.js"></script>
   <script src="js/charts.js"></script>
+  <script src="js/rules.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

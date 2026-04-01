@@ -252,6 +252,132 @@ html, body {
   flex-shrink: 0;
 }
 
+/* ── Filter Presets ───────────────────────────────────────── */
+
+.app-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.app-preset-btn {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid #d8dcde;
+  background: #fff;
+  cursor: pointer;
+  color: #49545c;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.app-preset-btn:hover {
+  background: #f8f9f9;
+  border-color: #87939e;
+}
+
+.app-preset-btn--active {
+  background: #edf7ff;
+  border-color: #3073d1;
+  color: #3073d1;
+  font-weight: 500;
+}
+
+.app-preset-btn--builtin {
+  border-style: dashed;
+}
+
+.app-preset-btn--save {
+  color: #3073d1;
+  border-color: #3073d1;
+  border-style: dashed;
+}
+
+.app-preset-btn__delete {
+  margin-left: 4px;
+  font-weight: 700;
+  color: #cc3340;
+  font-size: 12px;
+}
+
+.app-preset-btn__delete:hover {
+  color: #b42c37;
+}
+
+.app-preset-save {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ── Top Domains ──────────────────────────────────────────── */
+
+.app-top-domains {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.app-domain-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-bottom: 1px solid #e9ebed;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.app-domain-item:last-child {
+  border-bottom: none;
+}
+
+.app-domain-item:hover {
+  background: #f8f9f9;
+}
+
+.app-domain-item__name {
+  color: #2f3941;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.app-domain-item__count {
+  background: #3073d1;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Date Range ───────────────────────────────────────────── */
+
+.app-date-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.app-date-range .c-txt {
+  flex: 1;
+}
+
+.app-date-range .c-txt__input {
+  width: 100%;
+}
+
+.app-date-range__separator {
+  font-size: 11px;
+  color: #87939e;
+  flex-shrink: 0;
+}
+
 /* ── Filters ───────────────────────────────────────────────── */
 
 .app-filters {
@@ -451,6 +577,94 @@ html, body {
   color: #49545c;
 }
 
+/* ── Urgency Badges ───────────────────────────────────────── */
+
+.urgency-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.urgency-badge--critical {
+  background: #fce4e5;
+  color: #cc3340;
+}
+
+.urgency-badge--urgent {
+  background: #fff0e0;
+  color: #c72a1c;
+}
+
+.urgency-badge--warning {
+  background: #fff5db;
+  color: #ad5e18;
+}
+
+.urgency-badge--safe {
+  background: #edf8f4;
+  color: #038153;
+}
+
+/* ── Urgency Summary ──────────────────────────────────────── */
+
+.app-urgency-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.app-urgency-summary__card {
+  background: #f8f9f9;
+  border-radius: 6px;
+  padding: 8px 6px;
+  text-align: center;
+  border: 1px solid #e9ebed;
+}
+
+.app-urgency-summary__value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.app-urgency-summary__label {
+  font-size: 9px;
+  color: #87939e;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.app-urgency-summary__card--critical {
+  border-left: 3px solid #cc3340;
+}
+.app-urgency-summary__card--critical .app-urgency-summary__value {
+  color: #cc3340;
+}
+
+.app-urgency-summary__card--urgent {
+  border-left: 3px solid #c72a1c;
+}
+.app-urgency-summary__card--urgent .app-urgency-summary__value {
+  color: #c72a1c;
+}
+
+.app-urgency-summary__card--warning {
+  border-left: 3px solid #ed961c;
+}
+.app-urgency-summary__card--warning .app-urgency-summary__value {
+  color: #ad5e18;
+}
+
+.app-urgency-summary__card--safe {
+  border-left: 3px solid #038153;
+}
+.app-urgency-summary__card--safe .app-urgency-summary__value {
+  color: #038153;
+}
+
 /* ── Activity Log ──────────────────────────────────────────── */
 
 .app-log-header {
@@ -624,6 +838,27 @@ html, body {
   border: 1px solid #1f73b7;
 }
 
+.app-notification--undo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff5db;
+  color: #ad5e18;
+  border: 1px solid #ed961c;
+}
+
+.app-undo-btn {
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.app-modal__warning {
+  font-size: 12px;
+  color: #cc3340;
+  font-weight: 500;
+  margin: 0 0 4px 0;
+}
+
 @keyframes slideDown {
   from {
     transform: translateY(-20px);
@@ -710,6 +945,134 @@ html, body {
   to {
     transform: translateY(0);
   }
+}
+
+/* ── Recommendation Badges ────────────────────────────────── */
+
+.recommend-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 500;
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.recommend-badge--recover {
+  background: #edf8f4;
+  color: #038153;
+}
+
+.recommend-badge--delete {
+  background: #fce4e5;
+  color: #cc3340;
+}
+
+/* ── Rules Tab ────────────────────────────────────────────── */
+
+.app-rules-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-rules-list {
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+  margin-top: 8px;
+}
+
+.app-rule-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e9ebed;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.app-rule-item__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-rule-item__name {
+  font-weight: 500;
+  color: #2f3941;
+}
+
+.app-rule-item__conditions {
+  font-size: 10px;
+  color: #87939e;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-rule-item__toggle {
+  font-size: 10px;
+  color: #68737d;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.app-rule-item__toggle input {
+  margin-right: 2px;
+}
+
+/* ── Rule Editor ──────────────────────────────────────────── */
+
+.app-rule-editor {
+  background: #f8f9f9;
+  border: 1px solid #e9ebed;
+  border-radius: 6px;
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.app-rule-editor__header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.app-rule-editor__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.app-rule-condition {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.app-rule-condition select,
+.app-rule-condition input {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-rule-condition__remove {
+  flex-shrink: 0;
+  color: #cc3340;
+  font-weight: 700;
+}
+
+.app-rule-action__radios {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.c-txt__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #49545c;
+  margin-bottom: 4px;
 }
 
 /* ── Utility: spacing overrides ────────────────────────────── */

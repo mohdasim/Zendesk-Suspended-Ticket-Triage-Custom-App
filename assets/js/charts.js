@@ -7,6 +7,7 @@ var TicketCharts = (function () {
 
   var _trendChart = null;
   var _causeChart = null;
+  var _domainChart = null;
 
   // Color palette for cause categories
   var CAUSE_COLORS = {
@@ -183,16 +184,80 @@ var TicketCharts = (function () {
   }
 
   /**
+   * Render horizontal bar chart of top 10 sender domains.
+   * @param {string} canvasId - Canvas element ID
+   * @param {Array} tickets - All ticket objects
+   */
+  function renderDomainChart(canvasId, tickets) {
+    var canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+
+    var domains = TicketSearch.extractDomains(tickets).slice(0, 10);
+    var labels = domains.map(function (d) { return d.domain; });
+    var data = domains.map(function (d) { return d.count; });
+    var bgColors = domains.map(function (d, i) {
+      return PALETTE[i % PALETTE.length];
+    });
+
+    if (_domainChart) {
+      _domainChart.destroy();
+    }
+
+    _domainChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Tickets',
+          data: data,
+          backgroundColor: bgColors,
+          borderWidth: 0,
+          borderRadius: 2
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return context.raw + ' ticket' + (context.raw !== 1 ? 's' : '');
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, font: { size: 10 } },
+            grid: { display: false }
+          },
+          y: {
+            ticks: { font: { size: 10 } },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  }
+
+  /**
    * Destroy all chart instances (cleanup).
    */
   function destroy() {
     if (_trendChart) { _trendChart.destroy(); _trendChart = null; }
     if (_causeChart) { _causeChart.destroy(); _causeChart = null; }
+    if (_domainChart) { _domainChart.destroy(); _domainChart = null; }
   }
 
   return {
     renderTrendChart: renderTrendChart,
     renderCauseChart: renderCauseChart,
+    renderDomainChart: renderDomainChart,
     destroy: destroy
   };
 })();
