@@ -7,11 +7,12 @@ var TicketCache = (function () {
   'use strict';
 
   var DB_NAME = 'SuspendedTicketsTriageDB';
-  var DB_VERSION = 1;
+  var DB_VERSION = 2;
   var STORES = {
     TICKETS: 'tickets',
     ACTION_LOG: 'actionLog',
-    META: 'meta'
+    META: 'meta',
+    TRIAGE_RULES: 'triageRules'
   };
   var LOG_TTL_DAYS = 30;
 
@@ -51,6 +52,12 @@ var TicketCache = (function () {
         // Meta store – key-value pairs
         if (!db.objectStoreNames.contains(STORES.META)) {
           db.createObjectStore(STORES.META, { keyPath: 'key' });
+        }
+
+        // Triage rules store (v2)
+        if (!db.objectStoreNames.contains(STORES.TRIAGE_RULES)) {
+          var rulesStore = db.createObjectStore(STORES.TRIAGE_RULES, { keyPath: 'id' });
+          rulesStore.createIndex('enabled', 'enabled', { unique: false });
         }
       };
 
@@ -336,6 +343,58 @@ var TicketCache = (function () {
     });
   }
 
+  // ── Triage Rules ─────────────────────────────────────────
+
+  /** Get all triage rules */
+  function getAllRules() {
+    return openDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(STORES.TRIAGE_RULES, 'readonly');
+        var store = tx.objectStore(STORES.TRIAGE_RULES);
+        var request = store.getAll();
+
+        request.onsuccess = function () {
+          resolve(request.result || []);
+        };
+        request.onerror = function () {
+          reject(new Error('Failed to get rules'));
+        };
+      });
+    });
+  }
+
+  /** Insert or update a triage rule */
+  function putRule(rule) {
+    return openDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(STORES.TRIAGE_RULES, 'readwrite');
+        var store = tx.objectStore(STORES.TRIAGE_RULES);
+        store.put(rule);
+
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function (event) {
+          reject(new Error('Failed to save rule: ' + event.target.error));
+        };
+      });
+    });
+  }
+
+  /** Delete a triage rule by ID */
+  function deleteRule(id) {
+    return openDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(STORES.TRIAGE_RULES, 'readwrite');
+        var store = tx.objectStore(STORES.TRIAGE_RULES);
+        store.delete(id);
+
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function (event) {
+          reject(new Error('Failed to delete rule: ' + event.target.error));
+        };
+      });
+    });
+  }
+
   // ── Public API ───────────────────────────────────────────
 
   return {
@@ -350,6 +409,9 @@ var TicketCache = (function () {
     deleteMeta: deleteMeta,
     logAction: logAction,
     getRecentLogs: getRecentLogs,
-    clearExpiredLogs: clearExpiredLogs
+    clearExpiredLogs: clearExpiredLogs,
+    getAllRules: getAllRules,
+    putRule: putRule,
+    deleteRule: deleteRule
   };
 })();

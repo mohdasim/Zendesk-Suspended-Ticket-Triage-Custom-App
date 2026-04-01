@@ -32,6 +32,19 @@ var TicketSearch = (function () {
       });
     }
 
+    // Date range filter
+    if (criteria.dateFrom) {
+      result = result.filter(function (ticket) {
+        return (ticket.created_at || '') >= criteria.dateFrom;
+      });
+    }
+    if (criteria.dateTo) {
+      var toEnd = criteria.dateTo + 'T23:59:59.999Z';
+      result = result.filter(function (ticket) {
+        return (ticket.created_at || '') <= toEnd;
+      });
+    }
+
     // Cause filter
     if (causeId) {
       var causeIdNum = Number(causeId);
@@ -80,6 +93,20 @@ var TicketSearch = (function () {
       case 'subject':
         sorted.sort(function (a, b) {
           return (a.subject || '').localeCompare(b.subject || '');
+        });
+        break;
+      case 'urgency':
+        sorted.sort(function (a, b) {
+          var aD = a._urgency ? a._urgency.daysRemaining : 14;
+          var bD = b._urgency ? b._urgency.daysRemaining : 14;
+          return aD - bD;
+        });
+        break;
+      case 'domain':
+        sorted.sort(function (a, b) {
+          var aD = extractDomain(a.author ? a.author.email : '');
+          var bD = extractDomain(b.author ? b.author.email : '');
+          return aD.localeCompare(bD);
         });
         break;
       case 'newest':
@@ -156,6 +183,86 @@ var TicketSearch = (function () {
   }
 
   /**
+   * Extract domain from an email address.
+   * @param {string} email
+   * @returns {string} Lowercase domain or 'unknown'
+   */
+  function extractDomain(email) {
+    if (!email || email.indexOf('@') === -1) return 'unknown';
+    return email.split('@')[1].toLowerCase();
+  }
+
+  /**
+   * Group tickets by sender domain.
+   * @param {Array} tickets
+   * @returns {Array} [{domain, count, tickets}] sorted by count desc
+   */
+  function extractDomains(tickets) {
+    var domainMap = {};
+
+    tickets.forEach(function (ticket) {
+      var email = ticket.author ? ticket.author.email : '';
+      var domain = extractDomain(email);
+
+      if (!domainMap[domain]) {
+        domainMap[domain] = { domain: domain, count: 0, tickets: [] };
+      }
+      domainMap[domain].count++;
+      domainMap[domain].tickets.push(ticket.id);
+    });
+
+    var domains = Object.keys(domainMap).map(function (key) {
+      return domainMap[key];
+    });
+
+    domains.sort(function (a, b) { return b.count - a.count; });
+    return domains;
+  }
+
+  /**
+   * Compute urgency for a single ticket based on 14-day auto-deletion.
+   * @param {Object} ticket
+   * @returns {{daysRemaining: number, level: string}}
+   */
+  function computeUrgency(ticket) {
+    var EXPIRY_DAYS = 14;
+    var created = new Date(ticket.created_at);
+    var now = new Date();
+    var ageMs = now.getTime() - created.getTime();
+    var ageDays = ageMs / 86400000;
+    var daysRemaining = Math.max(0, Math.round((EXPIRY_DAYS - ageDays) * 10) / 10);
+    var level;
+
+    if (daysRemaining < 1) {
+      level = 'critical';
+    } else if (daysRemaining <= 3) {
+      level = 'urgent';
+    } else if (daysRemaining <= 7) {
+      level = 'warning';
+    } else {
+      level = 'safe';
+    }
+
+    return { daysRemaining: daysRemaining, level: level };
+  }
+
+  /**
+   * Enrich tickets with urgency data (mutates for performance).
+   * @param {Array} tickets
+   * @returns {Array} Same array with _urgency set on each ticket
+   */
+  function enrichWithUrgency(tickets) {
+    tickets.forEach(function (ticket) {
+      if (ticket.created_at) {
+        ticket._urgency = computeUrgency(ticket);
+      } else {
+        ticket._urgency = { daysRemaining: 14, level: 'safe' };
+      }
+    });
+    return tickets;
+  }
+
+  /**
    * Create a debounced function.
    * @param {Function} fn
    * @param {number} delay - Milliseconds
@@ -176,7 +283,11 @@ var TicketSearch = (function () {
   return {
     filterTickets: filterTickets,
     extractCauses: extractCauses,
+    extractDomain: extractDomain,
+    extractDomains: extractDomains,
     findRepeatOffenders: findRepeatOffenders,
+    computeUrgency: computeUrgency,
+    enrichWithUrgency: enrichWithUrgency,
     debounce: debounce
   };
 })();
